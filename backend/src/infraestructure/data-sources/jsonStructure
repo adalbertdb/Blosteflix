@@ -1,6 +1,0 @@
-
-    String id : Un identificador del vídeo, en principi, el nom del fitxer d'aques
-    String topic: Amb la temàtica del vídeo.
-    String description : Una descripció del vídeo.
-    double duration: Amb els segons que dura el vídeo.
-    String thumbnail: Una imatge representativa del vídeo.
