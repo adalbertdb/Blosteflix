@@ -16,18 +16,35 @@ export class videoController {
         this._getVideolist = getVideolist;
     }
 
+    /*  TODO => adaptar-ho tot per a un sol endpoint
+    parameter= async (req:express.Request, res: express.Response)=>{
+        const id = req.params.id;
+        const topic = req.params.topic;
+        let result;
+        if (id != null){
+            result = this.idVideo(id);
+        }else if (topic != null){
+            result = this.topicVideo(topic);
+        }else result = this.getVideolist();
+
+    }
+    */
 
     getVideolist = async (req:express.Request, res: express.Response)  => {
         const result = await this._getVideolist.execute();
-        res.status(200).send(result);
+        res.status(200).send(result)
+
     }
-    getById = async (req:express.Request, res: express.Response)=>{}
-    getByTopic = async (req:express.Request, res: express.Response)=>{}
+    idVideo = async (req:express.Request, res: express.Response)=>{
+        const result = await this._getByIdUC.execute(req.params.id)
+        console.log(result)
+        res.status(200).send(result)
 
+    }
+    topicVideo = async (req:express.Request, res: express.Response)=>{
+        const result = await this._getByTopic.execute(req.params.topic);
+        res.status(200).send(result)
 
-
-
-
-
+    }
 }
 
