@@ -47,12 +47,12 @@ class PlayScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Card grande con el video actual
+                  // Tarjeta grande con el video actual
                   VideoPlayerCard(video: videoActual),
 
                   const SizedBox(height: 20),
 
-                  // Card con la lista de todos los videos
+                  // Tarjeta con la lista de todos los videos
                   FutureBuilder<List<Video>>(
                     future: allVideosFuture,
                     builder: (context, allVideosSnapshot) {
@@ -80,7 +80,7 @@ class PlayScreen extends StatelessWidget {
   }
 }
 
-// Card grande para mostrar el video principal
+// Tarjeta grande para mostrar el video principal
 class VideoPlayerCard extends StatelessWidget {
   final Video video;
 
@@ -95,7 +95,7 @@ class VideoPlayerCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          // Thumbnail del video grande
+          // Miniatura del video grande
           Container(
             height: 250,
             decoration: BoxDecoration(
@@ -156,7 +156,7 @@ class VideoPlayerCard extends StatelessWidget {
   }
 }
 
-// Card con la lista de todos los videos
+// Tarjeta con la lista de todos los videos
 class VideoListCard extends StatelessWidget {
   final List<Video> videos;
   final String currentVideoId;
