@@ -16,6 +16,7 @@ export  class getVideolist {
     }
 
     async execute():Promise<videolistDTO[]> {
-        return this.repo.getVideolist();
+        const result =  this.repo.getVideolist();
+        return result;
     }
 }

@@ -17,8 +17,9 @@ export class videoController {
     }
 
 
-    getVideolist = async ()  => {
-        return this._getVideolist.execute()
+    getVideolist = async (req:express.Request, res: express.Response)  => {
+        const result = await this._getVideolist.execute();
+        res.status(200).send(result);
     }
     getById = async (req:express.Request, res: express.Response)=>{}
     getByTopic = async (req:express.Request, res: express.Response)=>{}

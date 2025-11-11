@@ -13,10 +13,11 @@ const videolistUC = new getVideolist(repo)
 const idUC = new getById(repo);
 const topicUC = new getByTopic(repo);
 const controller = new videoController(idUC,topicUC,videolistUC)
+const videoRouter = createVideoListRouter;
 
 const app = express();
 app.use(express.json());
-app.use('/api/videolist', createVideoListRouter(controller));
+app.use('/api/videolist', videoRouter(controller));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {

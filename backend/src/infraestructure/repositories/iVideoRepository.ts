@@ -26,7 +26,6 @@ export default class iVideoRepository extends videoRepository{
         videos.forEach(video => {
             videolist.push(<videolistDTO>videolistMapper.toVideoList(video));
         })
-        console.log(videolist);
 
         return videolist;
     }

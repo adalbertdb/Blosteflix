@@ -14,7 +14,5 @@ export const createVideoListRouter = (controller: videoController): Router => {
     // GET /api/videolist/:id
     router.get('/id/:id', controller.getById.bind(controller));
 
-    console.log()
-
     return router;
 };
