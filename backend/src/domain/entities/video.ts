@@ -13,8 +13,6 @@ export default class video {
         this._duration = duration;
         this._thumbnail = thumbnail;
     }
-
-
     get id(): string {
         return this._id;
     }

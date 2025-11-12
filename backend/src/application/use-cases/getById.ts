@@ -13,6 +13,8 @@ export  class getById {
     }
 
     execute = async (id:string)=>{
-        return this.repo.getById(id);
+        const result = this.repo.getById(id);
+        console.log(result);
+        return  result;
     }
 }
