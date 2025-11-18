@@ -1,0 +1,1 @@
+{"version":3,"file":"iVideoRepository.d.ts","sourceRoot":"","sources":["iVideoRepository.ts"],"names":[],"mappings":"AAAA,OAAO,eAAe,MAAM,8CAA8C,CAAC;AAE3E,MAAM,CAAC,OAAO,OAAO,gBAAiB,SAAQ,eAAe;IAEzD,OAAO,CAAC,OAAO,EAAE,MAAM;IAIvB,UAAU,CAAC,KAAK,EAAE,MAAM;IAIxB,YAAY;CAGf"}
