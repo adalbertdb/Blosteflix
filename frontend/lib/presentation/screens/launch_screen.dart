@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/domain/entities/video.dart';
 // import 'package:frontend/presentation/screens/play_screen.dart';
 import 'package:frontend/presentation/widgets/video_card.dart';
+import 'package:frontend/presentation/widgets/video_widget.dart';
 import 'package:frontend/repo_singleton.dart';
 
 class LaunchScreen extends StatefulWidget {
@@ -60,7 +61,7 @@ class _LaunchScreenState extends State<LaunchScreen> {
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                currentVideo != null ? Placeholder() : SizedBox(),
+                currentVideo != null ? VideoWidget() : SizedBox(),
                 Expanded(
                   child: ListView.builder(
                     // Generamos la lista de widgets proporcionándole la lista de provincias
