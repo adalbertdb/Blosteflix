@@ -11,7 +11,7 @@ export default class iVideoRepository extends videoRepository{
     static videos: video[] = JSON.parse(iVideoRepository.data);
 
     getById(videoId: string):video {
-        let result = new video("null","null","null",0,"null")
+        let result = new video("null","null","null",0,"null","null")
         iVideoRepository.videos.forEach(vid => {
             if (vid.id == videoId) {
                 result = vid;

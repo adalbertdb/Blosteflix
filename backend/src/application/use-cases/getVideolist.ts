@@ -1,4 +1,4 @@
-import  iVideoRepository from "../../infraestructure/repositories/iVideoRepository.js";
+import iVideoRepository from "../../infraestructure/repositories/iVideoRepository.js";
 import type {videolistDTO} from "../DTO/videolistDTO.js";
 
 
@@ -16,7 +16,6 @@ export  class getVideolist {
     }
 
     async execute():Promise<videolistDTO[]> {
-        const result =  this.repo.getVideolist();
-        return result;
+        return this.repo.getVideolist();
     }
 }

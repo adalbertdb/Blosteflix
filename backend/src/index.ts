@@ -5,6 +5,7 @@ import {getById} from './application/use-cases/getById.js';
 import {getByTopic} from './application/use-cases/getByTopic.js';
 import {getVideolist} from './application/use-cases/getVideolist.js';
 import VideoRepository from "./infraestructure/repositories/iVideoRepository.js";
+import path from "node:path";
 
 //Repository
 const repo = new VideoRepository()
@@ -24,6 +25,9 @@ const videoRouter = createVideoListRouter;
 const app = express();
 app.use(express.json());
 app.use('/api/videolist', videoRouter(controller));
+
+// Servimos los archivos que se encuentran en el directorio public
+app.use(express.static(path.join('public/videos/')));
 
 // Port express
 const port = process.env.PORT || 3000;

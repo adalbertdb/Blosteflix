@@ -10,6 +10,7 @@ export class videoController {
     _getByTopic: getByTopic;
     _getVideolist: getVideolist;
 
+
     constructor (getByIdUC : getById, getByTopic : getByTopic, getVideolist : getVideolist) {
         this._getByIdUC = getByIdUC;
         this._getByTopic = getByTopic;
