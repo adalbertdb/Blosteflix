@@ -1,93 +1,26 @@
 [
   {
     "id": "vid01",
-    "topic": "Introducció a la POO",
-    "description": "Presentació general dels conceptes bàsics de la Programació Orientada a Objectes.",
-    "duration": 245.7,
-    "thumbnail": "thumb_poo_intro.jpg"
+    "topic": "Hardware",
+    "description": "Hardware de los dispositivos moviles",
+    "duration": 172,
+    "thumbnail": "thumb_poo_intro.jpg",
+    "url": "/api/videolist/videos/video1"
   },
   {
     "id": "vid02",
-    "topic": "Introducció a la POO",
-    "description": "Història i avantatges del paradigma orientat a objectes en comparació amb la programació estructurada.",
-    "duration": 198.3,
-    "thumbnail": "thumb_poo_historia.jpg"
+    "topic": "Tecnologia",
+    "description": "Tecnologias de desarrollo",
+    "duration": 193,
+    "thumbnail": "thumb_poo_historia.jpg",
+    "url": "/api/videolist/videos/video2"
   },
   {
     "id": "vid03",
-    "topic": "Classes i objectes",
-    "description": "Definició de classes, creació d’objectes i ús de constructors amb exemples pràctics.",
-    "duration": 310.4,
-    "thumbnail": "thumb_classes_obj.jpg"
-  },
-  {
-    "id": "vid04",
-    "topic": "Classes i objectes",
-    "description": "Cas pràctic d’una classe ‘Cotxe’ amb atributs, mètodes i instàncies múltiples.",
-    "duration": 276.1,
-    "thumbnail": "thumb_classes_cotxe.jpg"
-  },
-  {
-    "id": "vid05",
-    "topic": "Herència",
-    "description": "Com crear subclasses i reutilitzar codi amb el concepte d’herència en Java.",
-    "duration": 332.9,
-    "thumbnail": "thumb_herencia_intro.jpg"
-  },
-  {
-    "id": "vid06",
-    "topic": "Herència",
-    "description": "Ús avançat de la paraula clau super i explicació de la jerarquia de classes.",
-    "duration": 298.3,
-    "thumbnail": "thumb_herencia_super.jpg"
-  },
-  {
-    "id": "vid07",
-    "topic": "Polimorfisme",
-    "description": "Introducció al polimorfisme i a la seva aplicació amb mètodes sobreescrits.",
-    "duration": 315.2,
-    "thumbnail": "thumb_polimorfisme_intro.jpg"
-  },
-  {
-    "id": "vid08",
-    "topic": "Polimorfisme",
-    "description": "Demostració pràctica del polimorfisme amb classes animals i comportaments diferents.",
-    "duration": 287.5,
-    "thumbnail": "thumb_polimorfisme_animals.jpg"
-  },
-  {
-    "id": "vid09",
-    "topic": "Interfícies",
-    "description": "Com definir i implementar interfícies per crear contractes de comportament.",
-    "duration": 254.9,
-    "thumbnail": "thumb_interficies_intro.jpg"
-  },
-  {
-    "id": "vid10",
-    "topic": "Interfícies",
-    "description": "Exemple pràctic d’interfícies múltiples i relació amb les classes abstractes.",
-    "duration": 342.8,
-    "thumbnail": "thumb_interficies_avancat.jpg"
-  },
-  {
-    "id": "vid11",
-    "topic": "Classes abstractes",
-    "description": "Diferències entre classes abstractes i interfícies, amb exemples comparatius.",
-    "duration": 301.2,
-    "thumbnail": "thumb_abstractes_intro.jpg"
-  },
-  {
-    "id": "vid12",
-    "topic": "Classes abstractes",
-    "description": "Cas pràctic amb una jerarquia d’empleats que utilitza classes abstractes per definir rols comuns.",
-    "duration": 356.7,
-    "thumbnail": "thumb_abstractes_empleats.jpg"
-  },
-  {
-    "id": "vid13",
-    "topic": "Pràctica final POO",
-    "description": "Desenvolupament complet d’un mini projecte integrant herència, interfícies i polimorfisme.",
-    "duration": 389.0,
-    "thumbnail": "thumb_practica_final.jpg"
+    "topic": "Apps",
+    "description": "Aplicaciones de android.",
+    "duration": 195,
+    "thumbnail": "thumb_classes_obj.jpg",
+    "url": "/api/videolist/videos/video3"
   }
 ]

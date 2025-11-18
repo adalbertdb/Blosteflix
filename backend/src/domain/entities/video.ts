@@ -4,14 +4,16 @@ export default class video {
     private _description : string;
     private _duration: number;
     private _thumbnail: string;
+    private _url:string;
 
 
-    constructor(id: string, topic: string, description: string, duration: number, thumbnail: string) {
+    constructor(id: string, topic: string, description: string, duration: number, thumbnail: string,url:string) {
         this._id = id;
         this._topic = topic;
         this._description = description;
         this._duration = duration;
         this._thumbnail = thumbnail;
+        this._url = url;
     }
     get id(): string {
         return this._id;
@@ -31,5 +33,8 @@ export default class video {
 
     get thumbnail(): string {
         return this._thumbnail;
+    }
+    get url():string{
+        return this._url;
     }
 }

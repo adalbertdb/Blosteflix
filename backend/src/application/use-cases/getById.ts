@@ -1,4 +1,4 @@
-import  iVideoRepository from "../../infraestructure/repositories/iVideoRepository.js";
+import iVideoRepository from "../../infraestructure/repositories/iVideoRepository.js";
 
 export  class getById {
 
@@ -13,8 +13,6 @@ export  class getById {
     }
 
     execute = async (id:string)=>{
-        const result = this.repo.getById(id);
-        console.log(result);
-        return  result;
+        return  this.repo.getById(id);
     }
 }
