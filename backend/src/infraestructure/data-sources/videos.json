@@ -1,0 +1,26 @@
+[
+  {
+    "id": "vid01",
+    "topic": "Hardware",
+    "description": "Hardware de los dispositivos moviles",
+    "duration": 172,
+    "thumbnail": "thumb_poo_intro.jpg",
+    "url": "/api/videolist/videos/video1"
+  },
+  {
+    "id": "vid02",
+    "topic": "Tecnologia",
+    "description": "Tecnologias de desarrollo",
+    "duration": 193,
+    "thumbnail": "thumb_poo_historia.jpg",
+    "url": "/api/videolist/videos/video2"
+  },
+  {
+    "id": "vid03",
+    "topic": "Apps",
+    "description": "Aplicaciones de android.",
+    "duration": 195,
+    "thumbnail": "thumb_classes_obj.jpg",
+    "url": "/api/videolist/videos/video3"
+  }
+]
