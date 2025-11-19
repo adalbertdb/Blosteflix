@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/domain/entities/video.dart';
 // import 'package:frontend/presentation/screens/play_screen.dart';
 import 'package:frontend/presentation/widgets/video_card.dart';
-import 'package:frontend/presentation/widgets/video_widget.dart';
+import 'package:frontend/presentation/widgets/videoWidget.dart';
 import 'package:frontend/repo_singleton.dart';
 
 class LaunchScreen extends StatefulWidget {
