@@ -6,7 +6,7 @@ import 'package:frontend/presentation/widgets/videoWidget.dart';
 import 'package:frontend/repo_singleton.dart';
 
 class LaunchScreen extends StatefulWidget {
-  LaunchScreen({super.key});
+  const LaunchScreen({super.key});
 
   @override
   State<LaunchScreen> createState() => _LaunchScreenState();
