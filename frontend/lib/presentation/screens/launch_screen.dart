@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/domain/entities/video.dart';
-// import 'package:frontend/presentation/screens/play_screen.dart';
 import 'package:frontend/presentation/widgets/video_card.dart';
 import 'package:frontend/presentation/widgets/videoWidget.dart';
 import 'package:frontend/repo_singleton.dart';
@@ -23,11 +22,8 @@ class _LaunchScreenState extends State<LaunchScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text('Blosteflix')),
       body: FutureBuilder<List<Video>?>(
-        future: _listaVideosFuture, // Future del que dependemos
+        future: _listaVideosFuture,
         builder: (context, asyncSnapshot) {
-          // Cuando el Future se complete, tendremos el resultado en el snapshot
-          // Según lo que este contenga, dibujaremos unos widgets u otros
-
           // Barra de progreso circular mientras se está cargando
           if (asyncSnapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -47,24 +43,40 @@ class _LaunchScreenState extends State<LaunchScreen> {
           }
 
           // Si llegamos aquí, vemos si el snapshot contiene datos.
-          // (Si no contiene generamos una lista vacía)
           final lista = asyncSnapshot.data ?? const <Video>[];
 
-          // Si la lista de provincias está vacía (el snapshot no contiene datos) lo indicamos
+          // Si la lista está vacía lo indicamos
           if (lista.isEmpty) {
             return const Center(child: Text("No se han encontrado vídeos"));
           }
 
           // Si contiene datos, generamos las tarjetas
           return Padding(
-            // Padding para dejar un margen
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                currentVideo != null ? VideoWidget() : SizedBox(),
+                // Mostrar video solo si hay uno seleccionado
+                if (currentVideo != null) ...[
+                  SizedBox(
+                    height: 250,
+                    child: VideoWidget(
+                      videoId: currentVideo!.id,
+                    ), // ← CORREGIDO
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    currentVideo!.id,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+
+                // Lista de videos
                 Expanded(
                   child: ListView.builder(
-                    // Generamos la lista de widgets proporcionándole la lista de provincias
                     itemCount: lista.length,
                     itemBuilder: (context, i) {
                       final v = lista[i];
@@ -75,12 +87,6 @@ class _LaunchScreenState extends State<LaunchScreen> {
                           setState(() {
                             currentVideo = v;
                           });
-                          /* Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PlayScreen(idVideo: v.id),
-                            ),
-                          ); */
                         },
                       );
                     },

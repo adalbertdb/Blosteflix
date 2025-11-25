@@ -8,6 +8,7 @@ void main() => runApp(BlosteflixApp());
 
 class BlosteflixApp extends StatelessWidget {
   const BlosteflixApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     // Hacemos uso de colores dinámicos si están definidos en el sistema

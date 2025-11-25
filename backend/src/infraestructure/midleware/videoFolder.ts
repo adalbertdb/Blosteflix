@@ -1,38 +1,55 @@
-// src/middlewares/serveDynamicFolder.middleware.ts
-import express from 'express';
+// src/middlewares/serveHlsIndex.middleware.ts
+import type { Request, Response } from 'express';
 import path from 'path';
 import { promises as fs } from 'fs';
 
-export const serveDynamicFolder = (baseFolder: string = 'public/videos') =>
-    async (req: express.Request, res: express.Response, next: express.NextFunction) => {
-        try {
-            const { id } = req.params;
+const BASE_FOLDER = 'public/videos';
 
-            const folderPath = path.resolve(baseFolder, id);
+export const serveHlsIndex = async (req: Request, res: Response) => {
+    const { videoId } = req.params;
+  try {
+    if (!videoId) return res.status(400).send('ID requerido');
 
-            // Verificar que esté dentro del directorio permitido (defensa en profundidad)
-            if (!folderPath.startsWith(path.resolve(baseFolder))) {
-                return res.status(400).json({ error: 'Acceso no permitido' });
-            }
+    const filePath = path.resolve(BASE_FOLDER, videoId, 'index.m3u8');
 
-            const stats = await fs.stat(folderPath);
-            if (!stats.isDirectory()) {
-                return res.status(404).json({ error: 'Carpeta no encontrada' });
-            }
+    // Seguridad anti path-traversal
+    if (!filePath.startsWith(path.resolve(BASE_FOLDER))) {
+      return res.status(403).send('Forbidden');
+    }
 
-            // Servir estáticamente solo esta carpeta
-            express.static(folderPath, {
-                index: 'index.m3u8',
-                dotfiles: 'deny',
-                fallthrough: false,
-                etag: true,
-                maxAge: '1h',
-            })(req, res, next);
+    let content = await fs.readFile(filePath, 'utf-8');
 
-        } catch (err: any) {
-            if (err.code === 'ENOENT') {
-                return res.status(404).json({ error: 'Carpeta no encontrada' });
-            }
-            next(err);
-        }
-    };
+    // Reescribir las rutas relativas en el .m3u8
+    // Convertir "index0.ts" en "/api/videolist/videos/{videoId}/index0.ts"
+    content = content.replace(
+      /^(index\d+\.ts)$/gm,
+      `/api/videolist/videos/${videoId}/$1`
+    );
+
+    // También para otros posibles .m3u8 anidados si existen
+    content = content.replace(
+      /^([\w-]+\.m3u8)$/gm,
+      `/api/videolist/videos/${videoId}/$1`
+    );
+
+    console.log('Serving playlist for:', videoId); // Debug log
+
+    res.setHeader('Content-Type', 'application/vnd.apple.mpegurl');
+    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.setHeader('Content-Length', Buffer.byteLength(content, 'utf-8'));
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Range');
+
+    return res.send(content);
+  } catch (err: any) {
+    if (err.code === 'ENOENT') {
+      console.error('Video not found:', videoId);
+      return res.status(404).send('Vídeo no encontrado');
+    }
+    console.error('Error sirviendo index.m3u8:', err);
+    return res.status(500).send('Error interno');
+  }
+};

@@ -27,7 +27,7 @@ class VideosApi {
 
   // Obtiene una lista de videos mediante un topic
   Future<List<dynamic>> getVideosByTopic(String topic) async {
-    String url = "$baseURL/$topic";
+    String url = "$baseURL/topic/$topic";
 
     http.Response data = await http.get(Uri.parse(url));
     if (data.statusCode == HttpStatus.ok) {
@@ -42,7 +42,7 @@ class VideosApi {
 
   // Obtiene información de un video en concreto
   Future<Map<String, dynamic>> getVideoById(String id) async {
-    String url = "$baseURL/$id";
+    String url = "$baseURL/id/$id";
 
     http.Response data = await http.get(Uri.parse(url));
     if (data.statusCode == HttpStatus.ok) {
