@@ -1,8 +1,18 @@
+// ============================================
+// VIDEO WIDGET - HLS VIDEO PLAYER
+// ============================================
+// Displays an HLS video player for streaming video from the backend
+// Supports HLS (HTTP Live Streaming) protocol for reliable playback
+// Used on Android/iOS with ExoPlayer/AVPlayer
+
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
 
+/// StatefulWidget for video playback
+/// Receives videoId and streams HLS playlist from backend
 class VideoWidget extends StatefulWidget {
+  /// Video ID to fetch and play (e.g., \"video1\")
   final String videoId;
 
   const VideoWidget({super.key, required this.videoId});
@@ -11,70 +21,122 @@ class VideoWidget extends StatefulWidget {
   State<VideoWidget> createState() => _VideoWidgetState();
 }
 
+/// State class managing video player lifecycle
 class _VideoWidgetState extends State<VideoWidget> {
+  /// Video player controller - null while initializing
   VideoPlayerController? _controller;
+
+  /// Loading state - true while fetching and initializing
   bool _isLoading = true;
+
+  /// Error message - null if no error
   String? _error;
 
   @override
   void initState() {
     super.initState();
+    // Start initializing video when widget is created
     _initializeVideo();
   }
 
+  /// Initialize video player with HLS stream
+  ///
+  /// Steps:
+  /// 1. Build HLS playlist URL with .m3u8 extension
+  /// 2. Validate playlist is accessible and valid
+  /// 3. Create VideoPlayerController
+  /// 4. Initialize controller (connect to backend)
+  /// 5. Start playback
   Future<void> _initializeVideo() async {
     try {
-      // Use .m3u8 extension to ensure ExoPlayer recognizes it as HLS
+      // ============================================
+      // STEP 1: BUILD HLS PLAYLIST URL
+      // ============================================
+      // NOTE: 10.0.2.2 is special address in Android emulator
+      // Maps to host machine's localhost (127.0.0.1)
+      // .m3u8 extension is CRITICAL for ExoPlayer to recognize HLS
       final hlsUrl =
           'http://10.0.2.2:3000/api/videolist/videos/${widget.videoId}/index.m3u8';
       print('🎬 Initializing video with URL: $hlsUrl');
 
-      // First, test if we can fetch the playlist manually
+      // ============================================
+      // STEP 2: VALIDATE PLAYLIST BEFORE INITIALIZING
+      // ============================================
+      // Pre-check: Verify playlist exists before creating player
+      // Helps catch network/server errors early
       try {
         final response = await http.get(Uri.parse(hlsUrl));
 
+        // Check HTTP status is 200 OK
         if (response.statusCode != 200) {
           throw Exception(
             'Server returned ${response.statusCode}: ${response.body}',
           );
         }
 
+        // Validate it's actually an HLS playlist (starts with #EXTM3U)
         if (!response.body.contains('#EXTM3U')) {
           throw Exception('Response is not a valid m3u8 playlist');
         }
       } catch (e) {
-        print('Failed to fetch playlist: $e');
+        print('❌ Failed to fetch playlist: $e');
         throw Exception('Cannot reach server: $e');
       }
 
-      // Create controller
+      // ============================================
+      // STEP 3: CREATE VIDEO PLAYER CONTROLLER
+      // ============================================
+      // VideoPlayerController.networkUrl supports HLS (.m3u8) streams
       final controller = VideoPlayerController.networkUrl(Uri.parse(hlsUrl));
 
-      // Initialize
+      // ============================================
+      // STEP 4: INITIALIZE CONTROLLER
+      // ============================================
+      // Connects to backend and fetches playlist
+      // Prepares the player for playback
       await controller.initialize();
 
+      // ============================================
+      // STEP 5: VALIDATE INITIALIZATION
+      // ============================================
       if (!controller.value.isInitialized) {
         throw Exception('Failed to initialize video controller');
       }
 
-      // Only set state if widget is still mounted
+      // ============================================
+      // STEP 6: CHECK IF WIDGET STILL MOUNTED
+      // ============================================
+      // Important: Only update state if widget is still in the tree
+      // Prevents memory leaks if user navigated away
       if (!mounted) {
         controller.dispose();
         return;
       }
 
+      // ============================================
+      // STEP 7: UPDATE UI STATE
+      // ============================================
       setState(() {
-        _controller = controller;
-        _isLoading = false;
+        _controller = controller; // Store controller
+        _isLoading = false; // Hide loading spinner
       });
 
-      // Auto-play after initialization
+      // ============================================
+      // STEP 8: START PLAYBACK
+      // ============================================
+      // Auto-play video and loop when finished
       await _controller!.play();
       _controller!.setLooping(true);
+
+      print('✅ Video initialized successfully');
     } catch (error) {
-      print('Error initializing video: $error');
+      // ============================================
+      // ERROR HANDLING
+      // ============================================
+      print('❌ Error initializing video: $error');
       if (!mounted) return;
 
+      // Display error message to user
       setState(() {
         _isLoading = false;
         _error = error.toString();
@@ -82,12 +144,18 @@ class _VideoWidgetState extends State<VideoWidget> {
     }
   }
 
+  /// Handle widget updates (parent rebuilds with new videoId)
+  /// Disposes old player and initializes new one if videoId changes
   @override
   void didUpdateWidget(VideoWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
+    // Check if videoId changed
     if (oldWidget.videoId != widget.videoId) {
+      // Cleanup old video player
       _controller?.pause();
       _controller?.dispose();
+
+      // Reset state and reinitialize with new video
       setState(() {
         _controller = null;
         _isLoading = true;
@@ -97,14 +165,26 @@ class _VideoWidgetState extends State<VideoWidget> {
     }
   }
 
+  /// Cleanup when widget is destroyed
+  /// Disposes video player resources to prevent memory leaks
   @override
   void dispose() {
     _controller?.dispose();
     super.dispose();
   }
 
+  /// Build video player UI with loading and error states
+  ///
+  /// Display hierarchy:
+  /// 1. If error: Show error message with retry button
+  /// 2. If loading: Show loading spinner
+  /// 3. Otherwise: Show video player with controls
   @override
   Widget build(BuildContext context) {
+    // ============================================
+    // ERROR STATE UI
+    // ============================================
+    // Display error message with retry button
     if (_error != null) {
       return Center(
         child: Column(
@@ -126,6 +206,7 @@ class _VideoWidgetState extends State<VideoWidget> {
               ),
             ),
             const SizedBox(height: 16),
+            // Retry button to reinitialize video
             ElevatedButton(
               onPressed: () {
                 setState(() {
@@ -141,6 +222,10 @@ class _VideoWidgetState extends State<VideoWidget> {
       );
     }
 
+    // ============================================
+    // LOADING STATE UI
+    // ============================================
+    // Display spinner while fetching and initializing
     if (_isLoading) {
       return const Center(
         child: Column(
@@ -154,20 +239,30 @@ class _VideoWidgetState extends State<VideoWidget> {
       );
     }
 
+    // ============================================
+    // FALLBACK: Still loading
+    // ============================================
     if (_controller == null || !_controller!.value.isInitialized) {
       return const Center(child: CircularProgressIndicator());
     }
 
+    // ============================================
+    // SUCCESS STATE: VIDEO PLAYER UI
+    // ============================================
+    // Display video with controls and progress bar
     return AspectRatio(
       aspectRatio: _controller!.value.aspectRatio,
       child: Stack(
         children: [
+          // Video player (displays the actual video content)
           VideoPlayer(_controller!),
+
+          // Progress bar at bottom (allows seeking/scrubbing)
           Align(
             alignment: Alignment.bottomCenter,
             child: VideoProgressIndicator(
               _controller!,
-              allowScrubbing: true,
+              allowScrubbing: true, // User can drag to seek
               padding: const EdgeInsets.all(8.0),
             ),
           ),
