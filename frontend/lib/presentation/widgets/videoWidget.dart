@@ -5,6 +5,7 @@
 // Supports HLS (HTTP Live Streaming) protocol for reliable playback
 // Used on Android/iOS with ExoPlayer/AVPlayer
 
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:http/http.dart' as http;
@@ -32,9 +33,26 @@ class _VideoWidgetState extends State<VideoWidget> {
   /// Error message - null if no error
   String? _error;
 
+  /// Controls visibility - true to show play/pause button
+  bool _showControls = true;
+
+  /// Timer to hide controls after inactivity
+  Timer? _hideControlsTimer;
+
+  /// Static map to store video states by videoId
+  static final Map<String, _VideoState> _videoStates = {};
+
+  /// Current video state
+  _VideoState? _currentVideoState;
+
   @override
   void initState() {
     super.initState();
+    // Get or create video state for this video
+    _currentVideoState = _videoStates.putIfAbsent(
+      widget.videoId,
+      () => _VideoState(),
+    );
     // Start initializing video when widget is created
     _initializeVideo();
   }
@@ -124,9 +142,28 @@ class _VideoWidgetState extends State<VideoWidget> {
       // ============================================
       // STEP 8: START PLAYBACK
       // ============================================
-      // Auto-play video and loop when finished
-      await _controller!.play();
+      // Restore saved position if exists
+      if (_currentVideoState!.position.inSeconds > 0) {
+        await _controller!.seekTo(_currentVideoState!.position);
+        debugPrint('🔄 Restored position: ${_currentVideoState!.position}');
+      }
+
+      // Restore play/pause state
+      if (_currentVideoState!.wasPlaying) {
+        await _controller!.play();
+      } else {
+        await _controller!.pause();
+        setState(() {
+          _showControls = true;
+        });
+      }
+
       _controller!.setLooping(true);
+
+      // Start timer to hide controls only if playing
+      if (_currentVideoState!.wasPlaying) {
+        _showControlsTemporarily();
+      }
 
       print('✅ Video initialized successfully');
     } catch (error) {
@@ -151,9 +188,18 @@ class _VideoWidgetState extends State<VideoWidget> {
     super.didUpdateWidget(oldWidget);
     // Check if videoId changed
     if (oldWidget.videoId != widget.videoId) {
+      // Save current video state before switching
+      _saveCurrentVideoState();
+
       // Cleanup old video player
       _controller?.pause();
       _controller?.dispose();
+
+      // Get or create state for new video
+      _currentVideoState = _videoStates.putIfAbsent(
+        widget.videoId,
+        () => _VideoState(),
+      );
 
       // Reset state and reinitialize with new video
       setState(() {
@@ -169,8 +215,56 @@ class _VideoWidgetState extends State<VideoWidget> {
   /// Disposes video player resources to prevent memory leaks
   @override
   void dispose() {
+    _saveCurrentVideoState();
+    _hideControlsTimer?.cancel();
     _controller?.dispose();
     super.dispose();
+  }
+
+  /// Save current video playback state
+  void _saveCurrentVideoState() {
+    if (_controller != null &&
+        _controller!.value.isInitialized &&
+        _currentVideoState != null) {
+      _currentVideoState!.position = _controller!.value.position;
+      _currentVideoState!.wasPlaying = _controller!.value.isPlaying;
+      debugPrint(
+        '💾 Saved state for ${widget.videoId}: ${_currentVideoState!.position} - Playing: ${_currentVideoState!.wasPlaying}',
+      );
+    }
+  }
+
+  /// Show controls and start timer to hide them
+  void _showControlsTemporarily() {
+    setState(() {
+      _showControls = true;
+    });
+
+    // Cancel any existing timer
+    _hideControlsTimer?.cancel();
+
+    // Start new timer to hide controls after 3 seconds
+    _hideControlsTimer = Timer(const Duration(seconds: 3), () {
+      if (mounted && _controller?.value.isPlaying == true) {
+        setState(() {
+          _showControls = false;
+        });
+      }
+    });
+  }
+
+  /// Toggle play/pause and show controls
+  void _togglePlayPause() {
+    setState(() {
+      if (_controller!.value.isPlaying) {
+        _controller!.pause();
+        _showControls = true; // Keep controls visible when paused
+        _hideControlsTimer?.cancel();
+      } else {
+        _controller!.play();
+        _showControlsTemporarily(); // Hide controls after delay when playing
+      }
+    });
   }
 
   /// Build video player UI with loading and error states
@@ -250,24 +344,58 @@ class _VideoWidgetState extends State<VideoWidget> {
     // SUCCESS STATE: VIDEO PLAYER UI
     // ============================================
     // Display video with controls and progress bar
-    return AspectRatio(
-      aspectRatio: _controller!.value.aspectRatio,
-      child: Stack(
-        children: [
-          // Video player (displays the actual video content)
-          VideoPlayer(_controller!),
+    return GestureDetector(
+      onTap: _showControlsTemporarily,
+      child: AspectRatio(
+        aspectRatio: _controller!.value.aspectRatio,
+        child: Stack(
+          children: [
+            // Video player (displays the actual video content)
+            VideoPlayer(_controller!),
 
-          // Progress bar at bottom (allows seeking/scrubbing)
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: VideoProgressIndicator(
-              _controller!,
-              allowScrubbing: true, // User can drag to seek
-              padding: const EdgeInsets.all(8.0),
+            // Play/Pause button centered on video (with fade animation)
+            AnimatedOpacity(
+              opacity: _showControls ? 1.0 : 0.0,
+              duration: const Duration(milliseconds: 300),
+              child: Center(
+                child: GestureDetector(
+                  onTap: _togglePlayPause,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withOpacity(0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(16),
+                    child: Icon(
+                      _controller!.value.isPlaying
+                          ? Icons.pause
+                          : Icons.play_arrow,
+                      color: Colors.white,
+                      size: 48,
+                    ),
+                  ),
+                ),
+              ),
             ),
-          ),
-        ],
+
+            // Progress bar at bottom (allows seeking/scrubbing)
+            Align(
+              alignment: Alignment.bottomCenter,
+              child: VideoProgressIndicator(
+                _controller!,
+                allowScrubbing: true, // User can drag to seek
+                padding: const EdgeInsets.all(8.0),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
+}
+
+/// Class to store video playback state
+class _VideoState {
+  Duration position = Duration.zero;
+  bool wasPlaying = true; // Default to auto-play for first time
 }
