@@ -74,6 +74,7 @@ deploy/
 scripts/local-*.sh
 
 # IDEs adicionales
+.idea/
 .vscode/
 *.code-workspace# Miscellaneous
 *.class
