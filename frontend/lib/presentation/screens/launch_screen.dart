@@ -101,68 +101,87 @@ class _LaunchScreenState extends State<LaunchScreen> {
           }
 
           // Videos loaded successfully - display them
-          return Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                // ============================================
-                // VIDEO PLAYER SECTION
-                // ============================================
+          return LayoutBuilder(
+            builder: (context, constraints) {
+              final isLandscape =
+                  MediaQuery.of(context).orientation == Orientation.landscape;
 
-                // Only show player and title if video is selected
-                if (currentVideo != null) ...[
-                  // Player container with fixed height
-                  SizedBox(
-                    height: 250,
-                    // Pass selected video ID to player widget
-                    // VideoWidget will build HLS stream URL and handle playback
-                    child: VideoWidget(videoId: currentVideo!.id),
-                  ),
-                  const SizedBox(height: 16),
+              return SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    children: [
+                      // ============================================
+                      // VIDEO PLAYER SECTION
+                      // ============================================
 
-                  // Display selected video title below player
-                  Text(
-                    currentVideo!.id,
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                ],
+                      // Only show player and title if video is selected
+                      if (currentVideo != null) ...[
+                        // Player container que se adapta al ancho disponible
+                        Container(
+                          width: double.infinity,
+                          constraints: BoxConstraints(
+                            maxHeight: isLandscape
+                                ? constraints.maxHeight * 0.7
+                                : constraints.maxHeight * 0.4,
+                          ),
+                          // Pass selected video ID to player widget
+                          // VideoWidget will build HLS stream URL and handle playback
+                          child: VideoWidget(videoId: currentVideo!.id),
+                        ),
+                        const SizedBox(height: 16),
 
-                // ============================================
-                // VIDEO LIST SECTION
-                // ============================================
+                        // Display selected video title below player
+                        Text(
+                          currentVideo!.id,
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                      ],
 
-                // Scrollable list of all available videos
-                // Expanded fills remaining space with scrolling
-                Expanded(
-                  child: ListView.builder(
-                    itemCount: lista.length,
-                    // Build each video card
-                    itemBuilder: (context, i) {
-                      final v = lista[i];
-                      return VideoCard(
-                        // Video ID (title)
-                        id: v.id,
-                        // Video thumbnail image URL
-                        thumbnail: v.thumbnail ?? '',
-                        // When user taps video card:
-                        // 1. Update currentVideo state
-                        // 2. Trigger rebuild
-                        // 3. Player appears and plays this video
-                        onTap: () {
-                          setState(() {
-                            currentVideo = v;
-                          });
+                      // ============================================
+                      // VIDEO LIST SECTION
+                      // ============================================
+
+                      // Lista de videos sin Expanded
+                      ListView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: lista.length,
+                        // Build each video card
+                        itemBuilder: (context, i) {
+                          final v = lista[i];
+                          return VideoCard(
+                            // Video ID (title)
+                            id: v.id,
+                            // Video topic/category
+                            topic: v.topic ?? 'Sin categoría',
+                            // Video description
+                            description: v.description ?? 'Sin descripción',
+                            // Video duration in seconds
+                            duration: v.duration ?? 0.0,
+                            // Video thumbnail image URL
+                            thumbnail: 'https://picsum.photos/200/300',
+                            // When user taps video card:
+                            // 1. Update currentVideo state
+                            // 2. Trigger rebuild
+                            // 3. Player appears and plays this video
+                            onTap: () {
+                              setState(() {
+                                currentVideo = v;
+                              });
+                            },
+                          );
                         },
-                      );
-                    },
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              );
+            },
           );
         },
       ),
